@@ -1,4 +1,7 @@
-﻿using System;
+﻿/*
+ 源码己托管:https://github.com/v5bep7/Utility
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿/*
+ 源码己托管:https://github.com/v5bep7/Utility
+ */
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;

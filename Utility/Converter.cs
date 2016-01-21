@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿/*
+ 源码己托管:https://github.com/v5bep7/Utility
+ */
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -190,6 +193,20 @@ namespace System
             if ((int)ts.TotalMinutes == 0)
                 return "刚刚";
             return (int)ts.TotalMinutes + "分钟前";
+        }
+
+        #endregion
+
+        #region Object拓展方法
+
+        /// <summary>
+        /// 判断一个对象是否为NULL
+        /// </summary>
+        /// <param name="input">判断对象</param>
+        /// <returns>是否为NULL</returns>
+        public static bool IsNull(this object input)
+        {
+            return input == null;
         }
 
         #endregion
