@@ -149,6 +149,19 @@ namespace System
             }
         }
 
+        /// <summary>
+        /// string to Enum
+        /// </summary>
+        /// <typeparam name="T">要转换的枚举类型</typeparam>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static T ToEnum<T>(this string s) where T : struct
+        {
+            T result;
+            Enum.TryParse(s, true, out result);
+            return result;
+        }
+
         #endregion
 
         #region DateTime 转 String

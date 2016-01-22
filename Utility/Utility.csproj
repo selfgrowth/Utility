@@ -48,10 +48,13 @@
     <Compile Include="Converter.cs" />
     <Compile Include="EncryptHelper.cs" />
     <Compile Include="HttpHelper.cs" />
+    <Compile Include="IntervalTask.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MailHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegexHelper.cs" />
     <Compile Include="SqlHelper.cs" />
+    <Compile Include="StreamExtension.cs" />
     <Compile Include="StringExtension.cs" />
   </ItemGroup>
   <ItemGroup>
