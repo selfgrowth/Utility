@@ -1,7 +1,4 @@
-﻿/*
- 源码己托管:https://github.com/v5bep7/Utility
- */
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -14,9 +11,14 @@ namespace System.Data.SqlClient
     /// <summary>
     /// SQL Server数据库访问类
     /// 本类为静态类,不可被实例化,需要使用直接调用即可
+    /// 请将配置文件的ConnectionStrings的name设置为connStr
     /// </summary>
     /// <remarks>
-    /// 2016/1/15 10:32:40 Created By Devin
+    /// FileName: 	SqlHelper.cs
+    /// CLRVersion: 4.0.30319.18444
+    /// Author: 	Devin
+    /// DateTime: 	2016/1/16 21:04:59
+    /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
     public class SqlHelper
     {

@@ -1,7 +1,4 @@
-﻿/*
- 源码己托管:https://github.com/v5bep7/Utility
- */
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +12,11 @@ namespace Utility
     /// Http请求工具类.该类不能静态类,直接使用即可
     /// </summary>
     /// <remarks>
-    /// 2016/1/21 14:06:48 Created By Devin
+    /// FileName: 	HttpHelper.cs
+    /// CLRVersion: 4.0.30319.18444
+    /// Author: 	Devin
+    /// DateTime: 	2016/1/21 21:06:48
+    /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
     public static class HttpHelper
     {

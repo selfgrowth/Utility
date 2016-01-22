@@ -1,7 +1,4 @@
-﻿/*
- 源码己托管:https://github.com/v5bep7/Utility
- */
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -10,10 +7,14 @@ using System.Text;
 namespace Utility
 {
     /// <summary>
-    /// 
+    /// 邮件发送辅助类
     /// </summary>
     /// <remarks>
-    /// 2016/1/15 18:04:59 Created By Devin
+    /// FileName: 	MailHelper.cs
+    /// CLRVersion: 4.0.30319.18444
+    /// Author: 	Devin
+    /// DateTime: 	2016/1/16 18:04:59
+    /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
     public class MailHelper
     {

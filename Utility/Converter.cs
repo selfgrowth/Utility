@@ -1,7 +1,4 @@
-﻿/*
- 源码己托管:https://github.com/v5bep7/Utility
- */
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -13,7 +10,11 @@ namespace System
     /// 该类里面皆为拓展方法
     /// </summary>
     /// <remarks>
-    /// 2016/1/15 16:49:44 Created By Devin
+    /// FileName: 	Converter.cs
+    /// CLRVersion: 4.0.30319.18444
+    /// Author: 	Devin
+    /// DateTime: 	2016/1/15 21:49:44
+    /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
     public static class Converter
     {
@@ -210,5 +211,6 @@ namespace System
         }
 
         #endregion
+
     }
 }

@@ -1,7 +1,4 @@
-﻿/*
- 源码己托管:https://github.com/v5bep7/Utility
- */
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,7 +10,11 @@ namespace System
     /// 加密辅助类,该类里面皆为string的拓展方法
     /// </summary>
     /// <remarks>
-    /// 2016/1/15 17:36:59 Created By Devin
+    /// FileName: 	EncryptHelper.cs
+    /// CLRVersion: 4.0.30319.18444
+    /// Author: 	Devin
+    /// DateTime: 	2016/1/15 17:36:59
+    /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
     public static class EncryptHelper
     {

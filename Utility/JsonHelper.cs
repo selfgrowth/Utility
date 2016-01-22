@@ -1,7 +1,4 @@
-﻿/*
- 源码己托管:https://github.com/v5bep7/Utility
- */
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,10 +9,14 @@ using Newtonsoft.Json.Linq;
 namespace Utility
 {
     /// <summary>
-    /// 
+    /// 操作Json的辅助类
     /// </summary>
     /// <remarks>
-    /// 2016/1/21 17:08:26 Created By Devin
+    /// FileName: 	JsonHelper.cs
+    /// CLRVersion: 4.0.30319.18444
+    /// Author: 	Devin
+    /// DateTime: 	2016/1/21 00:08:26
+    /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
     public static class JsonHelper
     {
