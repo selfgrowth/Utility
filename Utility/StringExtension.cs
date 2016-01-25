@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace Utility
+namespace System
 {
     /// <summary>
     /// 字符串的拓展方法
