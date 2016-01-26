@@ -51,8 +51,8 @@
 
 ##### 下面是类库的内容,有对应类文件的已经可以使用,其余的会陆陆续续更新
 
-1. cookie操作 			
-2. session操作
+1. cookie操作 --------- CookieHelper.cs
+2. session操作 ------- SessionHelper.cs
 3. cache操作
 4. ftp操作
 5. http操作 ------------ HttpHelper.cs
@@ -80,5 +80,5 @@
 27. Stream的拓展	------ StreamExtension.cs
 
 ##### 最后
-<center>如果发现Bug或者有不合理的地方或者建议,请发送邮箱至：228494894@qq.com</center>
+如果发现Bug或者有不合理的地方或者建议,请发送邮箱至：228494894@qq.com
 
