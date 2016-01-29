@@ -181,7 +181,8 @@ namespace Utility
         /// <returns></returns>
         public static List<string> GetGroups(string input, string pattern, int groupIndex, RegexOptions options)
         {
-            return (from Group g in Regex.Match(input, pattern, options).Groups select g.Value).ToList();
+            //return (from Group g in Regex.Match(input, pattern, options).Groups select g.Value).ToList();
+            return (from Match m in Regex.Matches(input, pattern, options) select m.Groups[groupIndex].Value).ToList();
         }
 
         /// <summary>
@@ -193,7 +194,34 @@ namespace Utility
         /// <returns></returns>
         public static List<string> GetGroups(string input, string pattern, int groupIndex)
         {
-            return (from Group g in Regex.Match(input, pattern).Groups select g.Value).ToList();
+            return (from Match m in Regex.Matches(input, pattern) select m.Groups[groupIndex].Value).ToList();
+        }
+
+        #endregion
+
+        #region 分割
+
+        /// <summary>
+        /// 根据正则表达式分割字符串
+        /// </summary>
+        /// <param name="input">要分割的字符串</param>
+        /// <param name="pattern">正则表达式</param>
+        /// <param name="options">匹配模式</param>
+        /// <returns>分割后的string</returns>
+        public static string[] Split(string input, string pattern, RegexOptions options)
+        {
+            return Regex.Split(input, pattern, options);
+        }
+
+        /// <summary>
+        /// 根据正则表达式分割字符串
+        /// </summary>
+        /// <param name="input">要分割的字符串</param>
+        /// <param name="pattern">正则表达式</param>
+        /// <returns>分割后的string</returns>
+        public static string[] Split(string input, string pattern)
+        {
+            return Regex.Split(input, pattern);
         }
 
         #endregion

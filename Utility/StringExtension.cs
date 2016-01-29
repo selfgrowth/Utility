@@ -351,5 +351,32 @@ namespace System
         }
 
         #endregion
+
+        #region 分割功能
+
+        /// <summary>
+        /// 根据正则表达式分割字符串
+        /// </summary>
+        /// <param name="input">要分割的字符串</param>
+        /// <param name="pattern">正则表达式</param>
+        /// <param name="options">匹配模式</param>
+        /// <returns>分割后的string</returns>
+        public static string[] Split(this string input, string pattern, RegexOptions options)
+        {
+            return Regex.Split(input, pattern, options);
+        }
+
+        /// <summary>
+        /// 根据正则表达式分割字符串
+        /// </summary>
+        /// <param name="input">要分割的字符串</param>
+        /// <param name="pattern">正则表达式</param>
+        /// <returns>分割后的string</returns>
+        public static string[] Split(this string input, string pattern)
+        {
+            return Regex.Split(input, pattern);
+        }
+
+        #endregion
     }
 }
