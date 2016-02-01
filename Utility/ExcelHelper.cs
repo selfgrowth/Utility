@@ -38,12 +38,209 @@ namespace Utility
 
         #region 导出到Excel
 
-        //public static void ExportToFile(DataSet dataSet,string fileName)
-        //{
-        //    //1966-800-100 
-        //    //2714
-        //    dataSet.Tables[0].Rows[0].
-        //}
+        #region dataTable
+
+        /// <summary>
+        /// 导出数据到Excel
+        /// </summary>
+        /// <param name="dataTable">要导出的数据</param>
+        public static byte[] ExportToArray(DataTable dataTable)
+        {
+            var dataSet = new DataSet();
+            dataSet.Tables.Add(dataTable);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ExportToStream(dataSet, stream);
+                return stream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 导出数据到Excel
+        /// </summary>
+        /// <param name="dataTable">要导出的数据</param>
+        /// <param name="fileName">要导出的文件名</param>
+        public static void ExportToFile(DataTable dataTable, string fileName)
+        {
+            var dataSet = new DataSet();
+            dataSet.Tables.Add(dataTable);
+            using (Stream stream = File.OpenWrite(fileName))
+            {
+                ExportToStream(dataSet, stream);
+            }
+        }
+
+        /// <summary>
+        /// 导出数据到Excel
+        /// </summary>
+        /// <param name="dataTable">要导出的数据</param>
+        /// <param name="stream">流</param>
+        public static void ExportToStream(DataTable dataTable, Stream stream)
+        {
+            var dataSet = new DataSet();
+            dataSet.Tables.Add(dataTable);
+            ExportToStream(dataSet,stream);
+        }
+
+        #endregion
+
+        #region DataSet导出到Excel
+
+        /// <summary>
+        /// 导出Excel文件到数组
+        /// </summary>
+        /// <param name="dataSet">要导出的数据</param>
+        public static byte[] ExportToArray(DataSet dataSet)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ExportToStream(dataSet, stream);
+                return stream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 导出数据到Excel文件
+        /// </summary>
+        /// <param name="dataSet">要导出的数据</param>
+        /// <param name="fileName">要导出的文件名</param>
+        /// <exception cref="ArgumentException">参数异常</exception>
+        public static void ExportToFile(DataSet dataSet, string fileName)
+        {
+            using (Stream stream = File.OpenWrite(fileName))
+            {
+                ExportToStream(dataSet, stream);
+            }
+        }
+
+        /// <summary>
+        /// 导出数据到数据流
+        /// </summary>
+        /// <param name="dataSet">要导出的数据</param>
+        /// <param name="stream">要导出到的数据流</param>
+        /// <exception cref="ArgumentException">参数异常</exception>
+        public static void ExportToStream(DataSet dataSet, Stream stream)
+        {
+            if (dataSet == null) throw new ArgumentException("无效的导入数据", "dataSet");
+            if (stream == null) throw new ArgumentException("目标数据流无效", "stream");
+
+            //创建工作簿
+            IWorkbook workbook = new HSSFWorkbook();
+            //创建日期的显示样式
+            _dateStyle = workbook.CreateCellStyle();
+            _dataFormat = workbook.CreateDataFormat();
+            _dateStyle.DataFormat = _dataFormat.GetFormat(_dataType);
+            DataTableCollection tables = dataSet.Tables;
+            for (int i = 0; i < tables.Count; i++)  //每张表
+            {
+                //当前表的总行数
+                DataRowCollection rows = tables[i].Rows;
+                //如果表里面没有数据,忽略这个表
+                if (rows.Count < 1) continue;
+                //当前表的列集合
+                var columns = tables[i].Columns;
+                //创建表
+                string tableName = string.IsNullOrEmpty(tables[i].TableName) ? "Sheel" + i : tables[i].TableName;
+                var sheel = workbook.CreateSheet(tableName);
+                //创建表头
+                var titleRow = sheel.CreateRow(0);
+                for (int j = 0; j < columns.Count; j++)
+                {
+                    string columnName = string.IsNullOrEmpty(columns[j].ColumnName) ? "Cell" + j : columns[j].ColumnName;
+                    var cell = titleRow.CreateCell(j);
+                    cell.SetCellValue(columnName);
+                }
+                //定义行开始索引
+                int rowIndex = 1;
+                foreach (DataRow dataRow in tables[i].Rows)     //每一行
+                {
+                    var row = sheel.CreateRow(rowIndex);
+                    rowIndex++;
+                    for (int j = 0; j < columns.Count; j++)     //每一个格子
+                    {
+                        //var cellValue = dataRow[j] == DBNull.Value ? string.Empty : dataRow[j].ToString();
+                        var cell = row.CreateCell(j);
+                        //如果该属性为null,设置单元格为空格
+                        if (dataRow[j] == null)
+                        {
+                            cell.SetCellType(CellType.Blank);
+                            return;
+                        }
+                        //判断单元格类型
+                        switch (columns[j].DataType.Name.ToLower())
+                        {
+                            case "char":
+                            case "string":
+                                cell.SetCellValue(Convert.ToString(dataRow[j]));
+                                break;
+                            case "double":
+                            case "single":
+                            case "int32":
+                                cell.SetCellValue(Convert.ToDouble(dataRow[j]));
+                                break;
+                            case "boolean":
+                                cell.SetCellValue(Convert.ToBoolean(dataRow[j]));
+                                break;
+                            case "datetime":
+                                cell.SetCellValue(Convert.ToDateTime(dataRow[j]));
+                                cell.CellStyle = _dateStyle;
+                                break;
+                            default:
+                                cell.SetCellValue(dataRow[j].ToString());
+                                break;
+                        }
+
+                    }
+                }
+
+            }
+            workbook.Write(stream);
+        }
+
+        #endregion
+
+        #region IEnumerable导出到Excel
+
+        /// <summary>
+        /// 导出Excel文件到数组
+        /// </summary>
+        /// <param name="dataTable">要导出的数据</param>
+        public static byte[] ExportToArray(IEnumerable<object> dataTable)
+        {
+            List<IEnumerable<object>> dataSet = new List<IEnumerable<object>>();
+            dataSet.Add(dataTable);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ExportToStream(dataSet, stream);
+                return stream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 导出Excel文件到数组
+        /// </summary>
+        /// <param name="dataSet">要导出的数据</param>
+        public static byte[] ExportToArray(IEnumerable<IEnumerable<object>> dataSet)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                ExportToStream(dataSet, stream);
+                return stream.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 导出数据到Excel文件
+        /// </summary>
+        /// <param name="dataTable">要导出的数据</param>
+        /// <param name="fileName">要导出的文件名</param>
+        /// <exception cref="ArgumentException">参数异常</exception>
+        public static void ExportToFile(IEnumerable<object> dataTable, string fileName)
+        {
+            List<IEnumerable<object>> dataSet = new List<IEnumerable<object>>();
+            dataSet.Add(dataTable);
+            ExportToFile(dataSet,fileName);
+        }
 
         /// <summary>
         /// 导出数据到Excel文件
@@ -55,8 +252,21 @@ namespace Utility
         {
             using (Stream stream = File.OpenWrite(fileName))
             {
-                ExportToStream(dataSet,stream);
+                ExportToStream(dataSet, stream);
             }
+        }
+
+        /// <summary>
+        /// 导出数据到数据流
+        /// </summary>
+        /// <param name="dataTable">要导出的数据</param>
+        /// <param name="stream">要导出到的数据流</param>
+        /// <exception cref="ArgumentException">参数异常</exception>
+        public static void ExportToStream(IEnumerable<object> dataTable, Stream stream)
+        {
+            List<IEnumerable<object>> dataSet = new List<IEnumerable<object>>();
+            dataSet.Add(dataTable);
+            ExportToStream(dataSet, stream);
         }
 
         /// <summary>
@@ -90,7 +300,7 @@ namespace Utility
                 ISheet sheet = workbook.CreateSheet();
                 SetTable(sheet, dataTable);
             }
-                workbook.Write(stream);
+            workbook.Write(stream);
         }
 
         /// <summary>
@@ -185,6 +395,8 @@ namespace Utility
                 SetRow(row, dataRow);
             }
         }
+
+        #endregion
 
         #endregion
     }
