@@ -353,7 +353,7 @@ namespace System.Data.SqlClient
         /// <typeparam name="TEntity">实体类型</typeparam>
         /// <param name="reader">SqlDataReader</param>
         /// <returns>实体集合</returns>
-        public List<TEntity> MapEntity<TEntity>(SqlDataReader reader)
+        public static List<TEntity> MapEntity<TEntity>(SqlDataReader reader)
             where TEntity : class,new()
         {
             //定义容器
@@ -388,7 +388,7 @@ namespace System.Data.SqlClient
                         if (!reader.IsDBNull(index))
                         {
                             //获取字段对应的值
-                            var value = reader.GetValue(index);
+                            var value = reader[index];
                             //给Entity对象的该属性赋值
                             prop.SetValue(entity, value, null);
                         }
