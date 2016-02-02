@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Utility
@@ -85,14 +86,12 @@ namespace Utility
         public static void Remove(string key)
         {
             key = key.ToLower();
-            if (Settings.ContainsKey(key))
+            if (!Settings.ContainsKey(key)) return;
+            lock (SyncObject)
             {
-                lock (SyncObject)
+                if (Settings.ContainsKey(key))
                 {
-                    if (Settings.ContainsKey(key))
-                    {
-                        Settings.Remove(key);
-                    }
+                    Settings.Remove(key);
                 }
             }
         }
@@ -105,12 +104,9 @@ namespace Utility
         {
             lock (SyncObject)
             {
-                foreach (var key in keys)
+                foreach (var key in keys.Where(key => Settings.ContainsKey(key)))
                 {
-                    if (Settings.ContainsKey(key))
-                    {
-                        Settings.Remove(key.ToLower());
-                    }
+                    Settings.Remove(key.ToLower());
                 }
             }
         }
@@ -261,7 +257,7 @@ namespace Utility
         /// <param name="key">key</param>
         /// <param name="def">默认值</param>
         /// <returns>值</returns>
-        public static int GetInt32(string key, int def = default(int))
+        public static int GetInt(string key, int def = default(int))
         {
             var res = GetString(key);
             if (res.Length == 0)
@@ -279,7 +275,7 @@ namespace Utility
         /// <param name="key">key</param>
         /// <param name="def">默认值</param>
         /// <returns>值</returns>
-        public static long GetInt64(string key, long def = default(long))
+        public static long GetLong(string key, long def = default(long))
         {
             var res = GetString(key);
             if (res.Length == 0)
@@ -373,7 +369,7 @@ namespace Utility
             {
                 doc = XDocument.Load(stream);
             }
-            XElement root = doc.Root;
+            var root = doc.Root;
             var elements =  root.Elements();
             foreach (var element in elements)
             {

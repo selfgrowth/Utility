@@ -26,7 +26,7 @@ namespace System.IO
         /// </summary>
         /// <param name="stream">流</param>
         /// <returns>MD5</returns>
-        public static string GetMD5(this Stream stream)
+        public static string GetMd5(this Stream stream)
         {
             var oMd5Hasher = new MD5CryptoServiceProvider();
             var arrbytHashValue = oMd5Hasher.ComputeHash(stream);

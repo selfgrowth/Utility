@@ -48,7 +48,7 @@ namespace Utility
         {
             var dataSet = new DataSet();
             dataSet.Tables.Add(dataTable);
-            using (MemoryStream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 ExportToStream(dataSet, stream);
                 return stream.ToArray();
@@ -79,7 +79,7 @@ namespace Utility
         {
             var dataSet = new DataSet();
             dataSet.Tables.Add(dataTable);
-            ExportToStream(dataSet,stream);
+            ExportToStream(dataSet, stream);
         }
 
         #endregion
@@ -140,10 +140,10 @@ namespace Utility
                 //当前表的列集合
                 var columns = tables[i].Columns;
                 //创建表
-                string tableName = string.IsNullOrEmpty(tables[i].TableName) ? "Sheel" + i : tables[i].TableName;
-                var sheel = workbook.CreateSheet(tableName);
+                string tableName = string.IsNullOrEmpty(tables[i].TableName) ? "Sheet" + i : tables[i].TableName;
+                var sheet = workbook.CreateSheet(tableName);
                 //创建表头
-                var titleRow = sheel.CreateRow(0);
+                var titleRow = sheet.CreateRow(0);
                 for (int j = 0; j < columns.Count; j++)
                 {
                     string columnName = string.IsNullOrEmpty(columns[j].ColumnName) ? "Cell" + j : columns[j].ColumnName;
@@ -154,7 +154,7 @@ namespace Utility
                 int rowIndex = 1;
                 foreach (DataRow dataRow in tables[i].Rows)     //每一行
                 {
-                    var row = sheel.CreateRow(rowIndex);
+                    var row = sheet.CreateRow(rowIndex);
                     rowIndex++;
                     for (int j = 0; j < columns.Count; j++)     //每一个格子
                     {
@@ -239,7 +239,7 @@ namespace Utility
         {
             List<IEnumerable<object>> dataSet = new List<IEnumerable<object>>();
             dataSet.Add(dataTable);
-            ExportToFile(dataSet,fileName);
+            ExportToFile(dataSet, fileName);
         }
 
         /// <summary>
@@ -397,6 +397,96 @@ namespace Utility
         }
 
         #endregion
+
+        #endregion
+
+        #region 从Excel导入
+
+        /// <summary>
+        /// 将Excel的数据导入到DataSet中
+        /// </summary>
+        /// <param name="fileName">完整文件名</param>
+        /// <returns>DataSet</returns>
+        public static DataSet GetDataSetFormFile(string fileName)
+        {
+            if (!File.Exists(fileName)) throw new FileNotFoundException("未找到文件",fileName);
+            using (Stream stream =File.OpenRead(fileName))
+            {
+                return GetDataSetFormStream(stream);
+            }
+        }
+
+        /// <summary>
+        /// 将Excel的数据导入到DataSet里面
+        /// </summary>
+        /// <param name="stream">流</param>
+        /// <returns>DataSet</returns>
+        public static DataSet GetDataSetFormStream(Stream stream)
+        {
+            //如果文件不存在
+            if (stream == null) throw new NullReferenceException("stream不可为null");
+
+            //WorkBook和DataSet
+            IWorkbook workBook = null;
+
+            workBook = new HSSFWorkbook(stream);
+            var set = new DataSet();
+
+            for (var i = 0; i < workBook.NumberOfSheets; i++)  //遍历每个Sheet
+            {
+                //Sheet和DataTable
+                var sheet = workBook.GetSheetAt(i);
+                var table = new DataTable(sheet.SheetName);
+
+                //表头
+                var headerRow = sheet.GetRow(0);
+                for (int j = 0; j < headerRow.LastCellNum; j++)
+                {
+                    DataColumn column = new DataColumn(headerRow.GetCell(j).StringCellValue);
+                    table.Columns.Add(column);
+                }
+
+
+                //内容
+                for (int j = 1; j <= sheet.LastRowNum; j++) //每一行
+                {
+                    var row = sheet.GetRow(j);
+                    if (row == null) continue;
+                    var dataRow = table.NewRow();
+
+                    for (int k = 0; k < headerRow.LastCellNum; k++) //每一格
+                    {
+                        var cell = row.GetCell(k);
+                        if (cell == null) continue;
+                        switch (cell.CellType)
+                        {
+                            case CellType.Blank:
+                                dataRow[cell.ColumnIndex] = null;
+                                break;
+                            case CellType.Boolean:
+                                dataRow[cell.ColumnIndex] = cell.BooleanCellValue;
+                                break;
+                            case CellType.Numeric:
+                                if (HSSFDateUtil.IsCellDateFormatted(cell))//日期类型
+                                {
+                                    dataRow[cell.ColumnIndex] = cell.DateCellValue;
+                                }
+                                else//其他数字类型
+                                {
+                                    dataRow[cell.ColumnIndex] = cell.NumericCellValue;
+                                }
+                                break;
+                            default:
+                                dataRow[cell.ColumnIndex] = cell.StringCellValue;
+                                break;
+                        }
+                    }
+                    table.Rows.Add(dataRow);
+                }
+                set.Tables.Add(table);
+            }
+            return set;
+        }
 
         #endregion
     }

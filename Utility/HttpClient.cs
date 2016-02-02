@@ -18,7 +18,7 @@ namespace Utility
     /// DateTime: 	2016/1/21 21:06:48
     /// GitHub:		https://github.com/v5bep7/Utility
     /// </remarks>
-    public static class HttpHelper
+    public static class HttpClient
     {
         #region Get请求
 
@@ -153,7 +153,7 @@ namespace Utility
         /// <returns>响应的流</returns>
         public static Stream GetStream(string url, object data)
         {
-            string queryString = string.Empty;
+            var queryString = string.Empty;
             if (data != null)
             {
                 queryString = string.Join("&",

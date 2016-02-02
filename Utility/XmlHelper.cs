@@ -42,14 +42,14 @@ namespace System.Xml.Linq
         /// <summary>
         /// 创建一个新Xml文档,根据该文档创建一个XmlHelper对象
         /// </summary>
-        /// <param name="version"></param>
-        /// <param name="encoding"></param>
-        /// <param name="standalone"></param>
-        /// <param name="rootName"></param>
+        /// <param name="version">文档描述的版本号</param>
+        /// <param name="encoding">文档描述的编码</param>
+        /// <param name="standalone">文档描述的standlone属性</param>
+        /// <param name="rootName">根节点的名称</param>
         public XmlHelper(string version, string encoding, string standalone,string rootName)
         {
             this._doc = new XDocument();
-            XDeclaration declaration = new XDeclaration(version,encoding,standalone);
+            var declaration = new XDeclaration(version,encoding,standalone);
             this._doc.Declaration = declaration;
             this._doc.Add(new XElement(rootName)); 
         }
@@ -67,15 +67,14 @@ namespace System.Xml.Linq
         }
 
         /// <summary>
-        /// 获取xPath匹配到的第一个元素的文本
+        /// 获取xPath匹配到的第一个元素的文本,如果没有匹配到,则返回""
         /// </summary>
         /// <param name="xPath">xPath表达式</param>
         /// <returns>匹配到的节点的值</returns>
         public string GetXElementText(string xPath)
         {
-            XElement element = _doc.XPathSelectElement(xPath);
-            if (element == null) return null;
-            return element.ToString();
+            var element = _doc.XPathSelectElement(xPath);
+            return element == null ? string.Empty : element.ToString();
         }
 
         /// <summary>
@@ -83,9 +82,9 @@ namespace System.Xml.Linq
         /// </summary>
         /// <param name="xPath">xPath表达式</param>
         /// <returns>存放匹配到的XElement的集合</returns>
-        public IEnumerable<XElement> GetXElements(string xPath)
+        public List<XElement> GetXElements(string xPath)
         {
-            return _doc.XPathSelectElements(xPath);
+            return _doc.XPathSelectElements(xPath).ToList();
         }
 
         /// <summary>
@@ -96,43 +95,54 @@ namespace System.Xml.Linq
         /// <returns>属性内容</returns>
         public string GetAttributeValue(string xPath, string attributeName)
         {
-            string result = string.Empty;
-            if (!string.IsNullOrEmpty(attributeName))
-            {
-                XElement element = _doc.XPathSelectElement(xPath);
-                if (element == null) return result;
-                if (!element.HasAttributes) return result;
-                XAttribute attr = element.Attribute(attributeName);
-                if (attr == null) return result;
-                result = attr.Value;
-            }
+            var result = string.Empty;
+            if (string.IsNullOrEmpty(attributeName)) return result;
+            XElement element = _doc.XPathSelectElement(xPath);
+            if (element == null) return result;
+            if (!element.HasAttributes) return result;
+            XAttribute attr = element.Attribute(attributeName);
+            if (attr == null) return result;
+            result = attr.Value;
             return result;
         }
 
+
+        /// <summary>
+        /// 获取所有被xPath匹配到的元素的属性,如果属性不存在,返回""
+        /// </summary>
+        /// <param name="xPath">xPath表达式</param>
+        /// <param name="attributeName">要获取的属性</param>
+        /// <returns>属性内容</returns>
+        public List<string> GetAttributesValue(string xPath, string attributeName)
+        {
+            var result = new List<string>();
+            if (string.IsNullOrEmpty(attributeName)) return result;
+            var elements = _doc.XPathSelectElements(xPath);
+            result.AddRange(from element in elements where element.HasAttributes select element.Attribute(attributeName) into attr where attr != null select attr.Value);
+            return result;
+        }
 
         #endregion
 
         #region 增加
 
         /// <summary>
-        /// 在xPath匹配到的第一个节点下追加一个子节点
+        /// 在xPath匹配到的第一个节点下追加一个子节点,如果追加不成功则返回false
         /// </summary>
         /// <param name="xPath">xPath表达式</param>
         /// <param name="name">节点名称</param>
-        /// <param name="innerText">节点内的文本</param>
+        /// <param name="innerText">节点内的文本,特殊符号会被encode</param>
         /// <param name="attributes">属性集合</param>
         /// <returns>true表示追加成功,false表示追加失败</returns>
         public bool AppendXElement(string xPath, string name, string innerText, IDictionary<string, string> attributes)
         {
-            XElement element = GetXElement(xPath);
+            var element = GetXElement(xPath);
             if (element == null) return false;
-            XElement childElement = new XElement(name);
-            childElement.Value = innerText;
+            var childElement = new XElement(name) {Value = innerText};
             if (attributes != null && attributes.Count > 0)
             {
-                foreach (var attr in attributes)
+                foreach (var attribute in attributes.Select(attr => new XAttribute(attr.Key, attr.Value)))
                 {
-                    XAttribute attribute = new XAttribute(attr.Key, attr.Value);
                     childElement.Add(attribute);
                 }
             }
@@ -147,7 +157,7 @@ namespace System.Xml.Linq
         /// <returns>true表示追加成功,false表示追加失败</returns>
         public bool AppendXElement(string xPath, XElement childElement)
         {
-            XElement element = GetXElement(xPath);
+            var element = GetXElement(xPath);
             if (element == null) return false;
             element.Add(childElement);
             return true;
@@ -159,18 +169,15 @@ namespace System.Xml.Linq
         /// <param name="xPath">xPath表达式</param>
         /// <param name="elements">要追加的节点集合</param>
         /// <returns>true表示追加成功,false表示追加失败</returns>
-        public bool AppendRange(string xPath, IEnumerable<XElement> elements)
+        public void AppendRange(string xPath, IEnumerable<XElement> elements)
         {
             XElement element = GetXElement(xPath);
-            if (element == null) return false;
-            if (elements != null && elements.Count() > 0)
+            if (element == null) return;
+            if (elements == null || !elements.Any()) return;
+            foreach (var xElement in elements)
             {
-                foreach (var xElement in elements)
-                {
-                    element.Add(xElement);
-                }
+                element.Add(xElement);
             }
-            return true;
         }
 
         /// <summary>
@@ -184,12 +191,12 @@ namespace System.Xml.Linq
         {
             var element = GetXElement(xPath);
             if (element == null) return false;
-            if (attributes == null || attributes.Count <= 0)return false;
+            if (attributes == null || !attributes.Any())return false;
             foreach (var attr in attributes)
             {
                 //XAttribute attribute = new XAttribute(attr.Key, attr.Value);
                 //childElement.Add(attribute);
-                XAttribute attribute = element.Attribute(attr.Key);
+                var attribute = element.Attribute(attr.Key);
                 if (attribute==null)    //表示不存在该属性
                 {
                     attribute = new XAttribute(attr.Key, attr.Value);
@@ -214,27 +221,9 @@ namespace System.Xml.Linq
         /// <returns>true表示修改成功,false表示修改失败</returns>
         public bool Update(string xPath,string value)
         {
-            XElement element= GetXElement(xPath);
+            var element= GetXElement(xPath);
             if (element == null) return false;
             element.Value = value;
-            return true;
-        }
-
-        /// <summary>
-        /// 修改xPath匹配到的节点的属性
-        /// </summary>
-        /// <param name="xPath">xPath表达式</param>
-        /// <param name="name">属性名</param>
-        /// <param name="value">要修改的值</param>
-        /// <returns>true表示修改成功,false表示修改失败</returns>
-        public bool UpdateAttribute(string xPath,string name, string value)
-        {
-            XElement element = GetXElement(xPath);
-            if (element == null) return false;
-            if (!element.HasAttributes) return false;
-            XAttribute attribute = element.Attribute(name);
-            if (attribute == null) return false;
-            attribute.Value = value;
             return true;
         }
 
@@ -243,13 +232,13 @@ namespace System.Xml.Linq
         #region 删除
 
         /// <summary>
-        /// 删除被xPath匹配的节点
+        /// 删除被xPath匹配的所有节点
         /// </summary>
         /// <param name="xPath"></param>
         public void Remove(string xPath)
         {
             var elements = GetXElements(xPath);
-            if (elements == null || elements.Count() <= 0) return;
+            if (elements == null || !elements.Any()) return;
             foreach (var ele in elements)
             {
                 ele.Remove();

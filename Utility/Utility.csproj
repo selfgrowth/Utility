@@ -76,7 +76,7 @@
     <Compile Include="ObjectExtension.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="EncryptHelper.cs" />
-    <Compile Include="HttpHelper.cs" />
+    <Compile Include="HttpClient.cs" />
     <Compile Include="IntervalTask.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="MailHelper.cs" />

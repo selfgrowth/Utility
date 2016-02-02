@@ -18,7 +18,7 @@ namespace Utility
     /// </remarks>
     public static class IntervalTask
     {
-        private static Dictionary<string, Timer> _timerValues = new Dictionary<string, Timer>();
+        private static readonly Dictionary<string, Timer> TimerValues = new Dictionary<string, Timer>();
 
         /// <summary>
         /// 开始一个任务,返回一个标识该任务的markId
@@ -44,7 +44,7 @@ namespace Utility
             timer.AutoReset = autoReset;
             timer.Start();
             string markId = Guid.NewGuid().ToString();
-            _timerValues.Add(markId, timer);
+            TimerValues.Add(markId, timer);
             return markId;
         }
 
@@ -54,12 +54,12 @@ namespace Utility
         /// <param name="markId"></param>
         public static void Stop(string markId)
         {
-            if (_timerValues.Keys.Contains(markId))
+            if (TimerValues.Keys.Contains(markId))
             {
-                _timerValues[markId].Stop();
-                _timerValues[markId].Close();
-                _timerValues[markId].Dispose();
-                _timerValues.Remove(markId);
+                TimerValues[markId].Stop();
+                TimerValues[markId].Close();
+                TimerValues[markId].Dispose();
+                TimerValues.Remove(markId);
             }
         }
 
@@ -70,9 +70,9 @@ namespace Utility
         /// <returns></returns>
         public static Timer GetTimer(string markId)
         {
-            if (_timerValues.Keys.Contains(markId))
+            if (TimerValues.Keys.Contains(markId))
             {
-                return _timerValues[markId];
+                return TimerValues[markId];
             }
             return null;
         }

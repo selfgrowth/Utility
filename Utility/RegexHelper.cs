@@ -27,7 +27,7 @@ namespace Utility
         /// <param name="pattern">模式字符串</param>        
         public static bool IsMatch(string input, string pattern)
         {
-            return IsMatch(input, pattern);
+            return Regex.IsMatch(input, pattern);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Utility
         {
             string result = string.Empty;
 
-            Match match = Regex.Match(input, pattern);
+            var match = Regex.Match(input, pattern);
             if (match.Success)
             {
                 result = match.Value;
@@ -103,7 +103,7 @@ namespace Utility
         {
             string result = string.Empty;
 
-            Match match = Regex.Match(input, pattern, options);
+            var match = Regex.Match(input, pattern, options);
             if (match.Success)
             {
                 result = match.Value;
@@ -119,12 +119,10 @@ namespace Utility
         /// <returns>匹配结果</returns>
         public static List<string> Matches(string input, string pattern)
         {
-            List<string> result = new List<string>();
-            MatchCollection matches = Regex.Matches(input, pattern);
-            if (matches.Count > 0)
-            {
-                result.AddRange(from Match match in matches select match.Value);
-            }
+            var result = new List<string>();
+            var matches = Regex.Matches(input, pattern);
+            if (matches.Count <= 0) return result;
+            result.AddRange(from Match match in matches select match.Value);
             return result;
         }
 
@@ -137,12 +135,10 @@ namespace Utility
         /// <returns>匹配结果</returns>
         public static List<string> Matches(string input, string pattern, RegexOptions options)
         {
-            List<string> result = new List<string>();
-            MatchCollection matches = Regex.Matches(input, pattern, options);
-            if (matches.Count > 0)
-            {
-                result.AddRange(from Match match in matches select match.Value);
-            }
+            var result = new List<string>();
+            var matches = Regex.Matches(input, pattern, options);
+            if (matches.Count <= 0) return result;
+            result.AddRange(from Match match in matches select match.Value);
             return result;
         }
 
@@ -153,9 +149,9 @@ namespace Utility
         /// <param name="pattern">正则表达式</param>
         /// <param name="groupIndex">组对应的索引</param>
         /// <returns>提取到的组的值</returns>
-        public static string GetGroup(string input,string pattern,int groupIndex)
+        public static string GetGroup(string input, string pattern, int groupIndex)
         {
-            return Regex.Match(input,pattern).Groups[groupIndex].Value;
+            return Regex.Match(input, pattern).Groups[groupIndex].Value;
         }
 
         /// <summary>
@@ -168,7 +164,7 @@ namespace Utility
         /// <returns>提取到的组的值</returns>
         public static string GetGroup(string input, string pattern, int groupIndex, RegexOptions options)
         {
-            return Regex.Match(input, pattern,options).Groups[groupIndex].Value;
+            return Regex.Match(input, pattern, options).Groups[groupIndex].Value;
         }
 
         /// <summary>

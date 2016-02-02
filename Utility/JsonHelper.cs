@@ -45,7 +45,10 @@ namespace Utility
         /// <returns>反序列化后的Object对象</returns>
         public static object Deserialize(string json)
         {
-           return JsonSerializer.Deserialize(new JsonTextReader(new StringReader(json)));
+            using (var reader = new StringReader(json))
+            {
+                return JsonSerializer.Deserialize(new JsonTextReader(reader));
+            }
         }
 
         /// <summary>
