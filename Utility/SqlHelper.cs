@@ -346,62 +346,70 @@ namespace System.Data.SqlClient
         #region 将SqlDataReader对象转换为List<Entity>对象
 
         /// <summary>
-        /// 将SqlDataReader对象转换为实体集合
+        /// 将SqlDataReader对象转换为实体
         /// </summary>
         /// <typeparam name="TEntity">实体类型</typeparam>
         /// <param name="reader">SqlDataReader</param>
-        /// <returns>实体集合</returns>
-        public static List<TEntity> MapEntity<TEntity>(SqlDataReader reader)
+        /// <returns>实体</returns>
+        public static TEntity MapEntity<TEntity>(SqlDataReader reader)
             where TEntity : class,new()
         {
-            //定义容器
-            List<TEntity> list = null;
-            //如果SqlDataReader为空,或者没有数据,直接返回null
-            if (reader == null || !reader.HasRows)
-            {
-                return list;
-            }
-            //创建容器
-            list = new List<TEntity>();
+            //如果SqlDataReader为Null
+            if (reader == null || !reader.HasRows) throw new ArgumentException("SqlDataReader不能为Null", "reader");
             //获取类型的公共属性
             var props = typeof(TEntity).GetProperties();
-            //循环读取数据
-            while (reader.Read())
+
+            //创建实体对象
+            var entity = new TEntity();
+            //遍历属性集合
+            foreach (var prop in props)
             {
-                //创建实体对象
-                var entity = new TEntity();
-                //遍历属性集合
-                foreach (var prop in props)
+                try
                 {
-                    try
+                    //如果属性不能写
+                    if (!prop.CanWrite)
                     {
-                        //如果属性不能写
-                        if (!prop.CanWrite)
-                        {
-                            continue;
-                        }
-                        //获取当前属性的索引
-                        var index = reader.GetOrdinal(prop.Name);
-                        //如果当前字段不是DBNull,表示可以赋值
-                        if (!reader.IsDBNull(index))
-                        {
-                            //获取字段对应的值
-                            var value = reader[index];
-                            //给Entity对象的该属性赋值
-                            prop.SetValue(entity, value, null);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        //如果异常,跳过该属性
                         continue;
                     }
+                    //获取当前属性的索引
+                    var index = reader.GetOrdinal(prop.Name);
+                    //如果当前字段不是DBNull,表示可以赋值
+                    if (!reader.IsDBNull(index))
+                    {
+                        //获取字段对应的值
+                        var value = reader[index];
+                        //给Entity对象的该属性赋值
+                        prop.SetValue(entity, value, null);
+                    }
                 }
-                list.Add(entity);
+                catch (Exception)
+                {
+                    //如果异常,跳过该属性
+                    continue;
+                }
             }
+            return entity;
+        }
 
+        #endregion
 
-            return list;
+        #region 如果值为Null,则转换为DbNull
+
+        /// <summary>
+        /// 如果值为Null,则转换为DbNull
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public object ToDbValue(object value)
+        {
+            if (value == null)
+            {
+                return DBNull.Value;
+            }
+            else
+            {
+                return value;
+            }
         }
 
         #endregion
