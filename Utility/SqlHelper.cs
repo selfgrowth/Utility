@@ -400,7 +400,7 @@ namespace System.Data.SqlClient
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public object ToDbValue(object value)
+        public static object ToDbValue(object value)
         {
             if (value == null)
             {
